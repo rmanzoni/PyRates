@@ -8,7 +8,8 @@ from objects import onething, counter
 
 def unpackTriggerReport(file, toread, dir):
 
-    os.system('cmsStage %s/%s .' %(dir, file))
+    # os.system('cmsStage %s/%s .' %(dir, file)) # obsolete...
+    os.system('xrdcp root://eoscms.cern.ch//eos/cms/%s/%s .' %(dir, file))
     os.system('tar -xf %s' %file)
     try:
         with open(toread) as ifile:
