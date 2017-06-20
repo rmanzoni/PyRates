@@ -21,11 +21,23 @@ class onething(object):
         return dc(self)
     
     def fillHisto(self):
-        self.histo = ROOT.TH1F('filters', 'filters', len(self.filters), 0, len(self.filters))
+        self.histo = ROOT.TH1F('modules', 'modules', len(self.filters), 0, len(self.filters))
         for k, v in self.filters.iteritems():
             self.histo.Fill(k[0], v.passed)
             self.histo.GetXaxis().SetBinLabel(k[0] + 1, v.name)
         self.histo.GetYaxis().SetTitle('events passed')
+
+    def fillReducedHisto(self):
+        self.reducedHisto = ROOT.TH1F('filters', 'filters', len(self.filters), 0, len(self.filters))
+        passed = -1
+        iter = 0
+        for k, v in self.filters.iteritems():
+            if v.passed != passed:
+                self.reducedHisto.Fill(iter, v.passed)
+                self.reducedHisto.GetXaxis().SetBinLabel(iter+1, v.name)
+                passed = v.passed
+                iter += 1
+        self.reducedHisto.GetYaxis().SetTitle('events passed')
         
 class counter(object):
     def __init__(self, trig, bitn, visited, passed, failed, error, name):
