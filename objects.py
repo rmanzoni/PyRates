@@ -1,12 +1,16 @@
 import re
 import os
+import ROOT
 from copy import deepcopy as dc
 from collections import OrderedDict
 from getFileList import get_files
 
+ROOT.TH1.SetDefaultSumw2()
+ROOT.gStyle.SetOptStat(0)
+
 class onething(object):
     def __init__(self, filters):
-        self.filters = OrderedDict(zip([ff.name for ff in filters], filters)) 
+        self.filters = OrderedDict(zip([(ff.bitn, ff.name) for ff in filters], filters))
     
     def __add__(self, other):
         if self.filters.keys() != other.filters.keys():
@@ -15,7 +19,14 @@ class onething(object):
             self.filters[k] += other.filters[k]
         
         return dc(self)
-
+    
+    def fillHisto(self):
+        self.histo = ROOT.TH1F('filters', 'filters', len(self.filters), 0, len(self.filters))
+        for k, v in self.filters.iteritems():
+            self.histo.Fill(k[0], v.passed)
+            self.histo.GetXaxis().SetBinLabel(k[0] + 1, v.name)
+        self.histo.GetYaxis().SetTitle('events passed')
+        
 class counter(object):
     def __init__(self, trig, bitn, visited, passed, failed, error, name):
         self.trig = int(trig)
@@ -36,7 +47,7 @@ class counter(object):
                                                          self.name   )
     
     def __add__(self, other):
-        if self.name != other.name:
+        if self.name != other.name or self.bitn != other.bitn :
             raise
         
         newcounter = counter('-999',

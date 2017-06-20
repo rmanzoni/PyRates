@@ -45,7 +45,8 @@ def unpack(file, toread,
     
     #print 'copying file: %s' %file
     
-    os.system('cmsStage %s/%s .' %(dir, file))
+    # os.system('cmsStage %s/%s .' %(dir, file))
+    os.system('xrdcp root://eoscms.cern.ch//eos/cms/%s/%s .' %(dir, file))
     os.system('tar -xf %s' %file)
     
     try:
